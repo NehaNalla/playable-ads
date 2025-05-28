@@ -23,37 +23,37 @@ import { createBackground } from "./js/objects/createBackground";
 import { SpriteFlipbook } from "./js/objects/SpriteFlipbook";
 import { scenario } from "./js/scenario";
 
-// Canvas
+
 const canvas = document.querySelector("canvas.webgl");
 const loader = document.querySelector(".loader");
 
-// Scene
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#19bffc");
 
-//Blockers
+
 blockersArr.forEach((block) => {
   scene.add(block);
 });
 
-//Cat
+
 const cat = new Cat();
 scene.add(cat);
 
-//Shark
+
 const shark = new Shark("Shark");
 scene.add(shark);
 
-//Tutor
+
 const tutor = new Tutor();
 scene.add(tutor);
 tutor.visible = false;
 
-//Fail
+
 const fail = new Fail();
 scene.add(fail);
 
-//Logo
+
 const logoCorner = new Logo(
   { x: 0.8, y: 0.075 },
   3,
@@ -64,7 +64,7 @@ const logoCorner = new Logo(
 );
 const relativeLogo = new RelativePosition(logoCorner);
 
-//Help
+
 const helpLogo = new Logo(
   { x: 0.5, y: 0.5 },
   2,
@@ -77,24 +77,24 @@ const relativeHelp = new RelativePosition(helpLogo);
 helpLogo.scale.set(0, 0, 1);
 helpLogo.rotation.z = Math.PI * 0.1;
 
-//OverlayDark
+
 const overlayDark = new OverlayDark();
 scene.add(overlayDark);
 
 
 
-// Inside your initScene or main setup
+
 const drum = createDrum();
 scene.add(drum);
-//Background
+
 createBackground(scene);
 
-// Dot
+
 const dotCenter = new SpriteFlipbook(dot, 1, 1, scene, "Dot");
 dotCenter.setScale(10);
 dotCenter.setPosition(0, 0, 0.1);
 
-//SPRITES
+
 const testSprite = new SpriteFlipbook(waterRSprite, 3, 3, scene, "RightWater");
 testSprite.setScale(5);
 testSprite.addPosition(2.67, -0.2, 0.1);
@@ -145,23 +145,18 @@ dynamicSpriteWater.setScale(10.7);
 dynamicSpriteWater.setPosition(0, 0, 0.6);
 dynamicSpriteWater.sprite.visible = false;
 
-/**
- * Sizes
- */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
 const cameraFrustrum = 92;
 
-/**
- * Camera
- */
+
 const camera = new Camera(sizes, cameraFrustrum, renderer);
 camera.position.set(0, 0, 1);
 scene.add(camera);
 
-//Resize setting
+
 window.addEventListener("resize", () => {
   resize(sizes, camera, renderer, cameraFrustrum);
 });
@@ -187,9 +182,6 @@ const resize = (sizes, camera, renderer, cameraFrustrum) => {
   );
 };
 
-/**
- * Renderer
- */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
@@ -201,9 +193,7 @@ renderer.outputColorSpace = "srgb-linear";
 
 resize(sizes, camera, renderer, cameraFrustrum);
 
-/**
- * Animate
- */
+
 const clock = new THREE.Clock();
 let previousTime = 0;
 
@@ -222,10 +212,10 @@ const tick = () => {
   dynamicSpriteWater.update(deltaTime);
   lava_static.update(deltaTime);
 
-  // Render
+  
   renderer.render(scene, camera);
 
-  // Call tick again on the next frame
+  
   window.requestAnimationFrame(tick);
 };
 
