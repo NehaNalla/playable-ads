@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="ad.orientation" content="portrait,landscape" />
+    <title>Playable Ads</title>
+    <style>
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        position: relative;
+        background: radial-gradient(
+          circle,
+          rgba(0, 228, 255, 1) 0%,
+          rgba(9, 105, 121, 1) 95%
+        );
+      }
+      * {
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+      }
+      .loader {
+        position: absolute;
+        width: 100%;
+        top: 10%;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font-size: 60px;
+        font-weight: 800;
+        transform: scale(1);
+      }
+      canvas {
+        width: 100%;
+        height: 100vh;
+        opacity: 0;
+        touch-action: none;
+      }
+      .overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        box-shadow: 0px 5px 16px 11px rgba(255, 0, 0, 0.64) inset;
+        opacity: 0;
+      }
+      .endcard {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        opacity: 0;
+        background: radial-gradient(
+          circle,
+          rgba(0, 228, 255, 1) 0%,
+          rgba(9, 105, 121, 1) 95%
+        );
+      }
+      .button {
+        width: 0%;
+        position: absolute;
+        left: 50%;
+        top: 80%;
+        transform: translate(-50%, -50%);
+        overflow-x: hidden;
+      }
+      .logo_picture {
+        width: 50%;
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 40px;
+        box-shadow: 0px 0px 10px 5px rgba(34, 60, 80, 0.6);
+      }
+      .logo_text {
+        width: 70%;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      #logo {
+        border-radius: 40px;
+        box-shadow: 0px 0px 10px 8px rgba(255, 255, 255, 1);
+        margin-top: 20px;
+        transform: scale(0.7);
+      }
+      #layer {
+        transform: scale(0.5);
+        margin-top: -47.5%;
+      }
+      .clicker {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: red;
+        z-index: 2;
+        width: 50%;
+        height: 50%;
+        opacity: 0;
+      }
+      @media (orientation: landscape) {
+        .logo_picture {
+          width: 25%;
+        }
+        .logo_text {
+          width: 30%;
+          top: 62.5%;
+        }
+        #layer {
+          transform: scale(0.3);
+        }
+      }
+    </style>
+    <script type="module" src="./index.js"></script>
+  </head>
+  <body>
+    <div class="clicker"></div>
+    <div class="loader">
+      <svg
+        version="1.2"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 225 225"
+        width="225"
+        height="225"
+        id="logo"
+      >
+        <title>loader_logo</title>
+        <defs>
+          <image
+            width="225"
+            height="225"
+            id="img1"
+            href="data:image/png;base64,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"
+          />
+        </defs>
+        <style></style>
+        <use id="Background" href="#img1" x="0" y="0" />
+      </svg>
+      <svg
+        version="1.1"
+        id="layer"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        viewBox="0 0 652 652"
+        style="enable-background: new 0 0 652 652"
+        xml:space="preserve"
+      >
+        <style type="text/css">
+          .st0 {
+            fill: #ffffff;
+          }
+        </style>
+        <g>
+          <path
+            class="st0"
+            d="M438.7,326.8c4.4-4.2,6.7-10.8,6.8-19.8c0.1-9-2.4-17.2-7.2-24.9c-9.4-14.3-24.1-21.6-44.4-21.8
+		c-17.8-0.1-32.6,5.2-44.6,16.1c-12,10.9-18.1,25.5-18.2,43.9c-0.1,14.6,4.3,27.8,13.4,39.7c4.6,6.1,11,11.1,19.4,14.9
+		s17.9,5.7,28.7,5.8c31,0.3,46.6-6.1,46.7-19.1c0-2.8-0.9-6.1-2.8-10.1c-3.3-6.6-7.3-9.9-11.9-9.9c-2.4,0-5.3,0.7-8.8,2.4l-2.4,0.9
+		c-4.9,1.7-11.5,2.5-19.9,2.4c-4.8-0.1-9.6-1.5-14.3-4.2c-4.8-2.8-7.1-6.3-7.1-10.3l51.8,0.5C429.3,333.2,434.3,331.1,438.7,326.8z
+		 M399.5,313.1l-27.6-0.3c0.1-4.4,2.5-9.6,6.3-12.9c4.6-3.9,10.2-5.1,14.9-5.1c4.7,0.1,8.4,1.1,10.9,3.2c2.6,2.1,3.8,4.8,3.8,8.1
+		C407.7,310.8,405,313.1,399.5,313.1z"
+          />
+          <path
+            class="st0"
+            d="M242.9,329.7L242.9,329.7L242.9,329.7L242.9,329.7z"
+          />
+          <path
+            class="st0"
+            d="M313.9,264.9c-4.6-1.9-8.4-2.8-11.4-2.8c-2.9,0-5.3,0.7-7.1,1.9c-3,1.9-5.1,6.2-5.6,7.5
+		c-2.5,5.9-7.7,19.5-15.5,41.1L261.2,275c-1.9-4.9-6-13.3-18.4-13.3c-12.4,0-16.3,8.6-18.2,13.3l-13.1,37.5
+		c-7.9-21.6-13.1-35.2-15.5-41.1c-0.4-1.3-2.6-5.7-5.6-7.5c-1.9-1.1-4.2-1.9-7.1-1.9c-2.9,0-6.7,0.9-11.4,2.8
+		c-8.3,3.4-12.5,7.9-12.5,13.7c0,1.3,0.7,4.2,2.2,8.5l33.8,82c1.1,2.8,5.3,10,16.7,10c12.8,0,18.1-15.4,18.9-17.4c0,0,0-0.1,0.1-0.1
+		c1.1-2.8,11.6-31.1,11.9-31.9l-9.4,24.8c3.2-8.7,8.2-22.3,9.2-24.8l0,0l0,0c1.5,3.5,11.1,30,11.9,32s6.1,17.4,18.9,17.4
+		c11.4,0,15.6-7.1,16.7-10l33.7-82c1.5-4.4,2.2-7.2,2.2-8.5C326.4,272.8,322.2,268.2,313.9,264.9z"
+          />
+          <path
+            class="st0"
+            d="M139,292.7C129.4,272.5,115.9,261,94,261s-35.4,11.5-45.1,31.7c0,0-24.9,59.3-26.3,62.9
+		c-0.6,1.2-2.2,5.8-1.4,9.3c0.5,2.2,1.6,4.2,3.7,6.3s5.4,4,10,6c8.2,3.5,14.4,3.2,18.5-0.9c2.4-2.4,11.5-23.4,11.5-23.4
+		c2-4.9,9.8-3.8,9.8,1.3l0.1,4c0.2,9.3,1.4,16.4,7.7,19.6c2.5,1.3,8.1,2,11.5,2c3.4-0.1,9-0.7,11.5-2c6.2-3.2,7.5-10.3,7.7-19.6
+		l0.1-4c0.1-5.1,7.8-6.2,9.8-1.3c0,0,9,21,11.5,23.4c4.1,4.1,10.3,4.4,18.5,0.9c4.6-2,7.9-4,10-6c2.1-2.1,3.2-4.2,3.7-6.3
+		c0.8-3.4-0.7-8-1.4-9.3C164,352.1,139,292.7,139,292.7z M93.9,328.5c-10.7-0.1-19.9-2.3-19.9-13.1c0-10.9,9-19.9,19.9-19.9
+		s19.9,9,19.9,19.9C113.8,326.2,104.6,328.5,93.9,328.5z"
+          />
+          <path
+            class="st0"
+            d="M618.9,354l-33.8-82c-1.1-2.8-5.3-10-16.7-10c-12.8,0-18.1,15.4-18.9,17.4c0,0,0,0.1-0.1,0.1
+		c-1.1,2.8-11.6,31.1-11.9,31.9l9.2-24.7c-3.2,8.7-8.2,22.3-9.2,24.8l0,0l0,0l0,0l0,0l0,0l0,0c-1.5-3.5-11.1-30-11.9-32
+		s-6.1-17.4-18.9-17.4c-11.4,0-15.6,7.1-16.7,10l-33.8,82c-1.5,4.4-2.2,7.2-2.2,8.5c0,5.8,4.2,10.4,12.5,13.7
+		c4.6,1.9,8.4,2.8,11.4,2.8c2.9,0,5.3-0.7,7.1-1.9c3-1.9,5.1-6.2,5.6-7.5c2.5-5.9,7.7-19.5,15.5-41.1l13.1,37.5
+		c1.9,4.9,6,13.3,18.4,13.3s16.3-8.6,18.2-13.3l13.1-37.5c7.9,21.6,13.1,35.2,15.5,41.1c0.4,1.3,2.6,5.7,5.6,7.5
+		c1.9,1.1,4.2,1.9,7.1,1.9c2.9,0,6.7-0.9,11.4-2.8c8.3-3.4,12.5-7.9,12.5-13.7C621.1,361.2,620.4,358.4,618.9,354z"
+          />
+        </g>
+      </svg>
+
+      <!-- <div class="loaderText">Loading</div> -->
+    </div>
+    <canvas class="webgl"></canvas>
+    <div class="overlay"></div>
+    <div class="endcard">
+      <img class="logo_picture" />
+      <img class="logo_text" />
+      <img class="button" />
+    </div>
+  </body>
+</html>
